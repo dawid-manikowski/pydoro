@@ -5,7 +5,7 @@ from time import sleep
 
 gi.require_version("Gtk", "3.0")
 
-
+# TODO: Move consts to some init module
 WORK_TIME = 1 * 30
 PAUSE_TIME = 1 * 15
 BREAK_TIME = 1 * 30
@@ -14,11 +14,13 @@ ICON_PATH = "./788502_1.jpg"
 
 class Pydoro(Gtk.Window):
 
+    # TODO: Rethink app data structure
     state = "idle"
     timer_thread = None
     pauses_taken = 0
 
     def __init__(self):
+        # TODO: Move init stuff to dedicated functions
         Gtk.Window.__init__(self, title="Pydoro")
 
         Notify.init("Pydoro")
@@ -46,6 +48,7 @@ class Pydoro(Gtk.Window):
         self.timer_lbl = Gtk.Label("{:02d}:{:02d}".format(*divmod(self.timer, 60)))
         self.state_lbl = Gtk.Label(self.state)
 
+        # TODO: Make design dynamic
         main_grid.attach(self.timer_lbl, 0, 0, 3, 2)
         main_grid.attach(self.state_lbl, 0, 4, 3, 1)
         main_grid.attach(self.start_btn, 0, 3, 1, 1)
@@ -82,6 +85,7 @@ class Pydoro(Gtk.Window):
         self.timer = 25 * 60
         self.timer_lbl.set_label("{:02d}:{:02d}".format(*divmod(self.timer, 60)))
 
+    # TODO: Defninitely refactor this monster
     def countdown(self):
         while self.timer:
             if self.stop_timer:
@@ -106,6 +110,7 @@ class Pydoro(Gtk.Window):
         self.timer_thread.start()
 
 
+# TODO: Wrap this to some nice if __name__
 win = Pydoro()
 win.connect("destroy", Gtk.main_quit)
 win.show_all()
