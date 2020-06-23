@@ -57,17 +57,20 @@ class Pydoro(Gtk.Window):
 
         self.timer_lbl = Gtk.Label(label="{:02d}:{:02d}".format(
             *divmod(self.timer, 60)))
-        self.state_lbl = Gtk.Label(label=self.state)
-        self.pauses_lbl = Gtk.Label(
-            label="Pauses: {}".format(self.pauses_taken))
+        self.state_lbl = Gtk.Label(label="Status:")
+        self.state_val_lbl = Gtk.Label(label=self.state)
+        self.pauses_lbl = Gtk.Label(label="Pauses:")
+        self.pauses_val_lbl = Gtk.Label(label=self.pauses_taken)
 
         # TODO: Make design dynamic
         main_grid.attach(self.timer_lbl, 0, 0, 3, 2)
-        main_grid.attach(self.state_lbl, 0, 4, 3, 1)
+        main_grid.attach(self.state_lbl, 0, 4, 2, 1)
+        main_grid.attach(self.state_val_lbl, 2, 4, 1, 1)
         main_grid.attach(self.start_btn, 0, 3, 1, 1)
         main_grid.attach(self.stop_btn, 1, 3, 1, 1)
         main_grid.attach(self.rst_btn, 2, 3, 1, 1)
-        main_grid.attach(self.pauses_lbl, 0, 5, 3, 1)
+        main_grid.attach(self.pauses_lbl, 0, 5, 2, 1)
+        main_grid.attach(self.pauses_val_lbl, 2, 5, 1, 1)
 
     def start(self, widget):
         if self.state not in ("idle", "paused"):
@@ -77,7 +80,7 @@ class Pydoro(Gtk.Window):
         self.notify("work")
         print("Timer started")
         self.state = "working"
-        self.state_lbl.set_label(self.state)
+        self.state_val_lbl.set_label(self.state)
         self.timer_thread = threading.Thread(target=self.countdown)
         self.timer_thread.daemon = True
         self.timer_thread.start()
@@ -115,8 +118,8 @@ class Pydoro(Gtk.Window):
             self.notify("work")
             self.timer = WORK_TIME
             self.state = "working"
-        self.state_lbl.set_label(self.state)
-        self.pauses_lbl.set_label("Pauses: {}".format(self.pauses_taken))
+        self.state_val_lbl.set_label(self.state)
+        self.pauses_val_lbl.set_label(str(self.pauses_taken))
 
     # TODO: Defninitely refactor this monster
     def countdown(self):
