@@ -1,8 +1,11 @@
 import threading
-from time import sleep
 from collections import Counter
+from time import sleep
 
 import gi
+
+from consts import (BREAK_TIME, ICON_PATH, NOTIFICATIONS, PAUSE_AMOUNT,
+                    PAUSE_TIME, WORK_TIME)
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Wnck", "3.0")
@@ -10,18 +13,6 @@ gi.require_version("Notify", "0.7")
 gi.require_version('GdkPixbuf', '2.0')
 
 from gi.repository import GdkPixbuf, Gtk, Notify, Wnck  # noqa: E402
-
-# TODO: Move consts to some init module
-PAUSE_AMOUNT = 4
-WORK_TIME = 1 * 25
-PAUSE_TIME = 1 * 5
-BREAK_TIME = 1 * 10
-ICON_PATH = "./788502_1.jpg"
-NOTIFICATIONS = {
-    "pause": "Shortie time!",
-    "break": "It's break time!",
-    "work": "Keep working!"
-}
 
 
 class Pydoro(Gtk.Window):
@@ -44,6 +35,7 @@ class Pydoro(Gtk.Window):
         image = GdkPixbuf.Pixbuf.new_from_file(ICON_PATH)
         self.notifs.set_image_from_pixbuf(image)
         self.set_icon(image)
+        self.set_resizable(False)
 
         self.timer = WORK_TIME
         self.stop_timer = False
@@ -51,6 +43,8 @@ class Pydoro(Gtk.Window):
         self.set_border_width(10)
 
         main_grid = Gtk.Grid()
+        main_grid.set_column_homogeneous(True)
+        main_grid.set_row_homogeneous(True)
         self.add(main_grid)
 
         self.start_btn = Gtk.Button(label="Start")
@@ -69,14 +63,14 @@ class Pydoro(Gtk.Window):
         self.pauses_val_lbl = Gtk.Label(label=self.pauses_taken)
 
         # TODO: Make design dynamic
-        main_grid.attach(self.timer_lbl, 0, 0, 3, 2)
-        main_grid.attach(self.state_lbl, 0, 4, 2, 1)
-        main_grid.attach(self.state_val_lbl, 2, 4, 1, 1)
-        main_grid.attach(self.start_btn, 0, 3, 1, 1)
-        main_grid.attach(self.stop_btn, 1, 3, 1, 1)
-        main_grid.attach(self.rst_btn, 2, 3, 1, 1)
-        main_grid.attach(self.pauses_lbl, 0, 5, 2, 1)
-        main_grid.attach(self.pauses_val_lbl, 2, 5, 1, 1)
+        main_grid.attach(self.timer_lbl, 1, 0, 1, 1)
+        main_grid.attach(self.start_btn, 0, 2, 1, 1)
+        main_grid.attach(self.stop_btn, 1, 2, 1, 1)
+        main_grid.attach(self.rst_btn, 2, 2, 1, 1)
+        main_grid.attach(self.state_lbl, 0, 3, 1, 1)
+        main_grid.attach(self.state_val_lbl, 2, 3, 1, 1)
+        main_grid.attach(self.pauses_lbl, 0, 4, 1, 1)
+        main_grid.attach(self.pauses_val_lbl, 2, 4, 1, 1)
 
     def start(self, widget):
         if self.state not in ("idle", "paused"):
