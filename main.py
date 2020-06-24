@@ -1,12 +1,15 @@
 import threading
 from time import sleep
+from collections import Counter
 
 import gi
 
 gi.require_version("Gtk", "3.0")
+gi.require_version("Wnck", "3.0")
 gi.require_version("Notify", "0.7")
+gi.require_version('GdkPixbuf', '2.0')
 
-from gi.repository import GdkPixbuf, Gtk, Notify  # noqa: E402
+from gi.repository import GdkPixbuf, Gtk, Notify, Wnck  # noqa: E402
 
 # TODO: Move consts to some init module
 PAUSE_AMOUNT = 4
@@ -28,6 +31,9 @@ class Pydoro(Gtk.Window):
     timer_thread = None
     pauses_taken = 0
     notifs_enabled = True
+    screen = Wnck.Screen.get_default()
+    active_windows = Counter()
+    current_window = None
 
     def __init__(self):
         # TODO: Move init stuff to dedicated functions
@@ -130,6 +136,7 @@ class Pydoro(Gtk.Window):
             self.timer -= 1
             mins, secs = divmod(self.timer, 60)
             self.timer_lbl.set_label("{:02d}:{:02d}".format(mins, secs))
+            self.handle_window_stats()
             sleep(1)
         self.resolve_state()
         self.timer_thread = threading.Thread(target=self.countdown)
@@ -139,6 +146,11 @@ class Pydoro(Gtk.Window):
     def notify(self, notify_event):
         self.notifs.update("Pydoro", NOTIFICATIONS.get(notify_event))
         self.notifs.show()
+
+    def handle_window_stats(self):
+        self.current_window = self.screen.get_active_window().get_name()
+        self.active_windows[self.current_window] += 1
+        print(self.active_windows)
 
 
 if __name__ == "__main__":
